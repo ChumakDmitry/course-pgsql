@@ -42,14 +42,16 @@ UPDATE accounts SET amount = amount + 1 WHERE id = 1;
 ```
 --T2
 ERROR:  deadlock detected
-DETAIL:  Process 6263 waits for ShareLock on transaction 866; blocked by process 4716.
-Process 4716 waits for ShareLock on transaction 867; blocked by process 6263.
+DETAIL:  Process 6668 waits for ShareLock on transaction 878; blocked by process 6705.
+Process 6705 waits for ShareLock on transaction 879; blocked by process 6668.
 HINT:  See server log for query details.
-CONTEXT:  while updating tuple (0,1) in relation "accounts"
+CONTEXT:  while updating tuple (0,8) in relation "accounts"
+
 ```
 
 3. Посмотреть логи и убедиться, что информация о дедлоке туда попала.
-![image](https://github.com/user-attachments/assets/9a4983ea-142e-4df9-ba74-70302c329a0e)
+![image](https://github.com/user-attachments/assets/2432bdc5-08b6-4b5b-b581-399f955d73e0)
+
 
 Произошло это из-за того, что мы пытались обновить одни и те же строки в разных порядках в рамках одной транзакции. Из-за того, что блокировка типа `ShareLock` в одной транзакиции не могла снятся, пока не выполнится другая транзакция
 
