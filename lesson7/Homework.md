@@ -1,12 +1,15 @@
 ### Домашнее задание №6
 
 1. Развернуть ВМ (Linux) с PostgreSQL
+
 С помощью Oracle VM VirtualBox развернул Ubuntu 22.04
 2. Залить Тайские перевозки
+
 https://github.com/aeuge/postgres16book/tree/main/database
 ``wget https://storage.googleapis.com/thaibus/thai_medium.tar.gz && tar -xf thai_medium.tar.gz && psql < thai.sql``
 
 3. Проверить скорость выполнения сложного запроса (приложен в конце файла скриптов)
+
 Проверим скорость с помощью команды Explain analyze. Увидим что стоимость нашего запроса составляет `cost=3475183.60..3475183.62` 'бананов'
 ```
 Limit  (cost=3475183.60..3475183.62 rows=10 width=56) (actual time=131396.780..131396.957 rows=10 loops=1)
@@ -69,6 +72,7 @@ Limit  (cost=3475183.60..3475183.62 rows=10 width=56) (actual time=131396.780..1
 (57 rows)
 ```
 4. Навесить индексы на внешние ключ
+
 Исходя из модели, приведённой в github, добавим индексы на внешние ключи
 ```
 CREATE INDEX idx_seat_fkbus ON book.seat (fkbus);
@@ -78,11 +82,13 @@ CREATE INDEX idx_schedule_fkroute ON book.schedule (fkroute);
 CREATE INDEX idx_busroute_fkbusstationfrom ON book.busroute (fkbusstationfrom);
 ```
 5. Проверить, помогли ли индексы на внешние ключи ускориться
-Нет, не помогли т.к. узким местом запроса является сортировка, которая забирает все ресурсы.
+
+Нет, не помогли, т.к. группировка таблицы tickets и сортировка забирают большую часть ресурсов.
 Попробовал добавить индекс на сортировку `CREATE INDEX idx_ride_startdate ON book.ride (startdate);`
 Отключение seqscan и vacuum analyze тоже не помогли
 
 Решение которое помогло
+
 Создаём мат вью запросом 
 ```
 CREATE MATERIALIZED VIEW mv_order_all_place AS
